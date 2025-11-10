@@ -9,24 +9,37 @@ drop database database_name;
 ## Table queries
 
 ```
-create table users
-(id uuid primary key default uuid_generate_v4(),
-name varchar(100) not null,
-city varchar(100) not null);
+<!-- CREATING A TABLE -->
+create table users(
+ id serial primary key,
+ name varchar(100),
+ email varchar(255),
+ password text,
+ age int
+);
 
-insert into users (name, city)
-values
-('Shyam Kumar', 'Kolaghat'),
-('Ram Chandra', 'Rampur');
+<!-- DELETING A TABLE -->
+drop table users;
 
+<!-- ADDING DATA INSIDE TABLE (ROW) -->
+insert into users (name, email, password, age)
+values ('Sharadindu Das', 'remo@random.com', 'Hello@123', 26);
+
+insert into users (name, email, password, age)
+values ('Random User', 'random@gmail.com', 'Random@123', 28);
+
+<!-- SELECTING / GETTING DATA FROM TABLE -->
 select * from users;
-select id,name from users;
+select name, email from users;
+select * from users where age > 27;
 
-update orders
-set quantity = 4
-where customer_name  = 'Sharadindu Das';
+<!-- UPDATING DATA INSIDE TABLE -->
+update users 
+set email = 'sharadindu@gmail.com' 
+where id = 1;
 
-delete from orders
-where name = 'Vikram Gupta';
+<!-- DELETING DATA FROM TABLE -->
+delete from users 
+where id = 3;
 
 ```
