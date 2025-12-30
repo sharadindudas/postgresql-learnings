@@ -167,3 +167,32 @@ left join users u
 on p.user_id = u.id;
 
 ```
+
+### Some more clauses
+
+-   Distinct is used to select unique data only
+
+```
+select distinct dept
+from employees;
+```
+
+-   % means it can be anything character length
+-   \_ means it is used to skip characters
+
+```
+select * from employees
+where fname like 'A%';
+
+select * from employees
+where fname like '%a';
+
+select * from employees
+where fname like '%i%';
+
+select * from employees
+where dept like '__';
+
+select * from employees
+where fname like '_a%';
+```
