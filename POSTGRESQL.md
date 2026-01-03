@@ -177,7 +177,7 @@ select distinct dept
 from employees;
 ```
 
--   % means it can be anything character length
+-   % means it can be any character length
 -   \_ means it is used to skip characters
 
 ```
@@ -195,4 +195,92 @@ where dept like '__';
 
 select * from employees
 where fname like '_a%';
+```
+
+### Aggregate Functions
+
+```
+SELECT COUNT(emp_id) FROM employees;
+
+SELECT SUM(salary) FROM employees;
+
+SELECT AVG(salary) FROM employees;
+
+SELECT MIN(salary) FROM employees;
+
+SELECT MAX(salary) FROM employees;
+
+SELECT * FROM employees
+WHERE salary = (SELECT MAX(salary) FROM employees);
+
+SELECT COUNT(emp_id) AS total_employees FROM employees;
+
+SELECT dept, COUNT(emp_id) FROM employees
+GROUP BY dept;
+
+```
+
+### Group By (Important)
+
+```
+SELECT dept, count(emp_id)
+FROM employees
+GROUP BY dept;
+```
+
+### String functions
+
+```
+SELECT CONCAT(fname, ' ', lname) AS full_name
+FROM employees;
+
+SELECT CONCAT_WS(' ', fname, lname) AS full_name
+FROM employees;
+
+SELECT * FROM employees
+WHERE LENGTH(fname) = 4;
+
+```
+
+### Find the employee with the highest/lowest salary (Task)
+
+```
+SELECT * FROM employees
+ORDER BY salary DESC
+LIMIT 1;
+
+SELECT * FROM employees
+WHERE salary = (SELECT MAX(salary) FROM employees);
+
+SELECT * FROM employees
+ORDER BY salary
+LIMIT 1;
+
+SELECT * FROM employees
+WHERE salary = (SELECT MIN(salary) FROM employees);
+```
+
+### Alter Table
+
+```
+ALTER TABLE persons
+RENAME mob_no TO phone_number;
+
+ALTER TABLE persons
+RENAME TO users;
+
+ALTER TABLE users
+ADD COLUMN phone_no VARCHAR(15);
+
+ALTER TABLE users
+DROP COLUMN city;
+
+```
+
+### Check constraint
+
+```
+ALTER TABLE users
+ADD COLUMN phone_no VARCHAR(15)
+CHECK (LENGTH(phone_no) >= 10);
 ```
