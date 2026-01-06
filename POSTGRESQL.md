@@ -196,3 +196,168 @@ where dept like '__';
 select * from employees
 where fname like '_a%';
 ```
+
+### Relationships
+
+```
+CREATE TABLE customers(
+	customer_id SERIAL PRIMARY KEY,
+	customer_name VARCHAR(100) NOT NULL
+);
+
+INSERT INTO customers (customer_name)
+VALUES ('Raju'), ('Sham'), ('Paul'), ('Alex');
+
+CREATE TABLE orders(
+	order_id SERIAL PRIMARY KEY,
+	order_date DATE NOT NULL,
+	customer_id INT NOT NULL,
+	FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+);
+
+INSERT INTO orders (order_date, customer_id)
+VALUES ('2024-01-01', 1),
+    ('2024-02-01', 2),
+    ('2024-03-01', 3),
+    ('2024-04-04', 2);
+```
+
+### Joins
+
+```
+SELECT *
+FROM customers
+CROSS JOIN orders;
+
+SELECT c.customer_name, o.order_id, o.order_date
+FROM customers c
+JOIN orders o
+ON o.customer_id = c.customer_id;
+
+SELECT c.customer_name , count(o.order_id)
+FROM customers c
+JOIN orders o
+ON o.customer_id = c.customer_id
+GROUP BY c.customer_name;
+
+SELECT c.customer_name , o.order_id, o.order_date
+FROM customers c
+LEFT JOIN orders o
+ON o.customer_id = c.customer_id;
+
+```
+
+### Task (Student courses)
+
+```
+CREATE TABLE students (
+student_id SERIAL PRIMARY KEY,
+name VARCHAR(100) NOT null
+);
+
+INSERT INTO Students (name) VALUES
+('Raju'),
+('Sham'),
+('Alex');
+
+CREATE TABLE courses(
+course_id SERIAL PRIMARY KEY,
+course_name VARCHAR(100) NOT NULL,
+fees NUMERIC NOT null
+);
+
+INSERT INTO courses (course_name, fees)
+VALUES
+('Mathematics', 500.00),
+('Physics', 600.00),
+('Chemistry', 700.00);
+
+CREATE TABLE course_enrollments(
+enrollment_id SERIAL PRIMARY KEY,
+student_id INT NOT NULL,
+course_id INT NOT NULL,
+enrollment_date DATE NOT NULL,
+FOREIGN KEY (student_id) REFERENCES students(student_id),
+FOREIGN KEY (course_id) REFERENCES courses(course_id)
+);
+
+INSERT INTO course_enrollments (student_id, course_id, enrollment_date)
+VALUES (1, 1, '2024-01-01'),
+(1, 2, '2024-01-15'),
+(2, 1, '2024-02-01'),
+(2, 3, '2024-02-15'),
+(3, 3, '2024-03-25');
+
+SELECT ce.enrollment_id, s."name", c.course_name, c.fees, ce.enrollment_date
+FROM course_enrollments ce
+JOIN students s
+ON ce.student_id = s.student_id
+JOIN courses c
+ON ce.course_id = c.course_id;
+```
+
+### Task (StoreDB)
+
+```
+CREATE TABLE customers(
+	customer_id SERIAL PRIMARY KEY,
+	customer_name VARCHAR(100) NOT NULL
+);
+
+INSERT INTO customers (customer_name)
+VALUES ('Raju'), ('Sham'), ('Paul'), ('Alex');
+
+CREATE TABLE orders(
+	order_id SERIAL PRIMARY KEY,
+	order_date DATE NOT NULL,
+	customer_id INT NOT NULL,
+	FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+);
+
+INSERT INTO orders (order_date, customer_id)
+VALUES ('2024-01-01', 1),
+    ('2024-02-01', 2),
+    ('2024-03-01', 3),
+    ('2024-04-04', 2);
+
+CREATE TABLE products (
+    product_id SERIAL PRIMARY KEY,
+    product_name VARCHAR(100) NOT NULL,
+    price NUMERIC NOT NULL
+);
+
+INSERT INTO products (product_name, price)
+VALUES
+    ('Laptop', 55000.00),
+    ('Mouse', 500),
+    ('Keyboard', 800.00),
+    ('Cable', 250.00);
+
+CREATE TABLE order_items (
+    item_id SERIAL PRIMARY KEY,
+    order_id INTEGER NOT NULL,
+    product_id INTEGER NOT NULL,
+    quantity INTEGER NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id),
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
+    );
+
+INSERT INTO order_items (order_id, product_id, quantity)
+VALUES (1, 1, 1),
+    (1, 4, 2),
+    (2, 1, 1),
+    (3, 2, 1),
+    (3, 4, 5),
+    (4, 3, 1);
+
+SELECT oi.item_id, c.customer_name, o.order_date , p.product_name,
+p.price, oi.quantity, (p.price * oi.quantity) AS total_price
+FROM order_items oi
+LEFT JOIN products p
+ON oi.product_id = p.product_id
+LEFT JOIN orders o
+ON oi.order_id = o.order_id
+LEFT JOIN customers c
+ON o.customer_id = c.customer_id;
+
+```
