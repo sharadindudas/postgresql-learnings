@@ -449,3 +449,79 @@ LEFT JOIN customers c
 ON o.customer_id = c.customer_id;
 
 ```
+
+### Views
+
+```
+CREATE VIEW billing_info AS SELECT
+	c.customer_name,
+	o.order_date,
+	p.product_name,
+	p.product_price,
+	oi.quantity,
+	(oi.quantity * p.product_price) AS total_price
+FROM order_items oi
+	JOIN
+		products p ON oi.product_id = p.product_id
+	JOIN
+		orders o ON o.order_id = oi.order_id
+	JOIN
+		customers c ON o.customer_id = c.customer_id;
+```
+
+### Practice Set
+
+```
+CREATE TABLE employees (
+    id SERIAL PRIMARY KEY,
+    name TEXT,
+    department TEXT,
+    salary INT
+);
+
+INSERT INTO employees (name, department, salary) VALUES
+('Amit', 'Engineering', 95000),
+('Riya', 'Engineering', 72000),
+('Kunal', 'HR', 60000),
+('Neha', 'Finance', 85000),
+('Saurav', 'Engineering', 120000),
+('Pooja', 'Marketing', 55000);
+
+CREATE VIEW high_salary_employees AS (SELECT *
+FROM employees
+WHERE salary > 80000);
+
+SELECT * FROM high_salary_employees
+WHERE department = 'Engineering';
+
+CREATE VIEW employee_salary_band AS (SELECT id, name, department, salary,
+CASE
+	WHEN salary < 60000 THEN 'LOW'
+	WHEN salary BETWEEN 60000 AND 90000 THEN 'MEDIUM'
+	ELSE 'HIGH'
+END AS salary_band
+FROM employees);
+
+SELECT *
+FROM employee_salary_band
+WHERE salary_band = 'HIGH';
+
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    name TEXT,
+    email TEXT,
+    password_hash TEXT,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+INSERT INTO users (name, email, password_hash) VALUES
+('Rahul', 'rahul@example.com', 'hash1'),
+('Sneha', 'sneha@example.com', 'hash2'),
+('Vikas', 'vikas@example.com', 'hash3');
+
+CREATE VIEW minimal_user_details AS SELECT id, name, email
+FROM users;
+
+SELECT * FROM minimal_user_details;
+
+```
