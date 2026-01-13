@@ -525,3 +525,147 @@ FROM users;
 SELECT * FROM minimal_user_details;
 
 ```
+
+### Having Clause
+
+```
+SELECT p_name, sum(total_price) AS Amount
+FROM billing_info
+GROUP BY p_name
+HAVING sum(total_price) > 1500;
+```
+
+### Group by rollup and coalesce
+
+```
+SELECT coalesce(p_name, 'Total'),
+sum(total_price) AS Amount
+FROM billing_info
+GROUP BY rollup(p_name)
+ORDER BY amount;
+```
+
+### Stored Procedure
+
+```
+CREATE OR REPLACE PROCEDURE update_emp_salary(
+    p_employee_id INT,
+    p_new_salary NUMERIC
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    UPDATE employees
+    SET salary = p_new_salary
+    WHERE emp_id = p_employee_id;
+END;
+$$;
+
+CREATE OR REPLACE PROCEDURE add_employee(
+    p_fname VARCHAR,
+    p_lname VARCHAR,
+    p_email VARCHAR,
+    p_dept VARCHAR,
+    p_salary NUMERIC
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    INSERT INTO employees (fname, lname, email, dept, salary)
+    VALUES (p_fname, p_lname, p_email, p_dept, p_salary);
+END;
+$$;
+
+```
+
+### User Defined Functions
+
+```
+CREATE OR REPLACE FUNCTION dept_max_sal_emp1(dept_name VARCHAR)
+RETURNS TABLE(emp_id INT, fname VARCHAR, salary NUMERIC)
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+	e.emp_id,
+	e.fname,
+	e.salary
+FROM
+	employees e
+WHERE
+	e.dept = dept_name
+	AND e.salary = (
+	SELECT
+		MAX(emp.salary)
+	FROM
+		employees emp
+	WHERE
+		emp.dept = dept_name
+
+        );
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT dept_max_sal_emp1('IT');
+```
+
+### CTE (Common Table Expression)
+
+```
+WITH avg_salary_per_dept AS
+(
+SELECT
+	e.dept,
+	AVG(e.salary) AS avg_salary
+FROM
+	employees e
+GROUP BY
+	e.dept)
+SELECT
+	em.emp_id ,
+	CONCAT_WS(' ', em.fname , em.lname ) AS full_name,
+	em.dept,
+	em.salary,
+	aspt.avg_salary
+FROM
+	avg_salary_per_dept aspt
+JOIN employees em
+ON
+	aspt.dept = em.dept
+WHERE
+	em.salary > aspt.avg_salary;
+
+
+WITH max_salary_per_dept AS
+(
+SELECT
+	e.dept,
+	MAX(e.salary) AS max_salary
+FROM
+	employees e
+GROUP BY
+	e.dept)
+SELECT
+	em.emp_id ,
+	CONCAT_WS(' ', em.fname, em.lname ) AS full_name,
+	em.dept,
+	em.salary
+FROM
+	max_salary_per_dept mspt
+JOIN employees em
+ON
+	mspt.dept = em.dept
+WHERE
+	em.salary = mspt.max_salary ;
+```
+
+### Cascade delete
+
+```
+CREATE TABLE orders (
+ord_id serial PRIMARY key,
+date date,
+amount decimal(10, 2),
+cust_id int,
+FOREIGN KEY (cust_id) REFERENCES customers(cust_id) ON DELETE CASCADE);
+```
